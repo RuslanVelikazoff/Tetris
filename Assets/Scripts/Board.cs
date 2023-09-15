@@ -9,6 +9,10 @@ public class Board : MonoBehaviour
     public Vector3Int spawnPosition;
     public Vector2Int boardSize = new Vector2Int(10, 20);
 
+    public GameObject losePanel;
+
+    public int score;
+
     public RectInt Bounds
     {
         get
@@ -20,8 +24,12 @@ public class Board : MonoBehaviour
 
     private void Awake()
     {
+        Time.timeScale = 1;
+
         tilemap = GetComponentInChildren<Tilemap>();
         activePiece = GetComponentInChildren<Piece>();
+
+        score = 0;
 
         for (int i = 0; i < tetrominoes.Length; i++)
         {
@@ -54,6 +62,10 @@ public class Board : MonoBehaviour
     public void GameOver()
     {
         tilemap.ClearAllTiles();
+        score = 0;
+
+        Time.timeScale = 0;
+        losePanel.SetActive(true);
 
         Debug.Log("Game over");
     }
@@ -155,6 +167,19 @@ public class Board : MonoBehaviour
             }
 
             row++;
+        }
+
+        AddScore(10);
+        AudioManager.instance.Play("Destroy");
+    }
+
+    private void AddScore(int addedScores)
+    {
+        score += addedScores;
+
+        if (score > PlayerPrefs.GetInt("HighScore"))
+        {
+            PlayerPrefs.SetInt("HighScore", score);
         }
     }
 }

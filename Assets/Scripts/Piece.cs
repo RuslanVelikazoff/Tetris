@@ -23,6 +23,7 @@ public class Piece : MonoBehaviour
         this.position = position;
 
         rotationIndex = 0;
+        stepDelay = PlayerPrefs.GetFloat("Difficulty");
         stepTime = Time.time + stepDelay;
         moveTime = Time.time + moveDelay;
         lockTime = 0f;
@@ -44,16 +45,12 @@ public class Piece : MonoBehaviour
 
         lockTime += Time.deltaTime;
 
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (SwipeController.swipeUp)
         {
             Rotate(-1);
         }
-        else if (Input.GetKeyDown(KeyCode.E))
-        {
-            Rotate(1);
-        }
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (SwipeController.swipeDown)
         {
             HardDrop();
         }
@@ -73,19 +70,11 @@ public class Piece : MonoBehaviour
 
     private void HandleMoveInputs()
     {
-        if (Input.GetKey(KeyCode.S))
-        {
-            if (Move(Vector2Int.down))
-            {
-                stepTime = Time.time + stepDelay;
-            }
-        }
-
-        if (Input.GetKey(KeyCode.A))
+        if (SwipeController.swipeLeft)
         {
             Move(Vector2Int.left);
         }
-        else if (Input.GetKey(KeyCode.D))
+        else if (SwipeController.swipeRight)
         {
             Move(Vector2Int.right);
         }
@@ -118,6 +107,8 @@ public class Piece : MonoBehaviour
         board.Set(this);
         board.ClearLines();
         board.SpawnPiece();
+
+        AudioManager.instance.Play("Lock");
     }
 
     private bool Move(Vector2Int translation)
